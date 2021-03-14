@@ -16,7 +16,7 @@ def cal_mean_std(img):
 
 
 def cal_high_freq(img):
-    assert len(img.shape) == 2 "Expect gray scale image"
+    assert len(img.shape) == 2, "Expect gray scale image"
     h, w = img.shape
     tensor_img = torch.Tensor(img)
     tensor_img = tensor_img.view(1, 1, h, w)
@@ -44,33 +44,48 @@ avg_pool = nn.AvgPool2d((2, 2))
 
 count = 0
 features = []
-video_name = "test_6"
+video_name = "test_5"
 cap = cv2.VideoCapture(f"videos/{video_name}.avi")
 while True:
     res, img = cap.read()
     if not res:
         break
 
+    # Color Space
+    b, g, r = cv2.split(img)
     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
+    # Blur - Low pass filter
     blur_img = cv2.GaussianBlur(img, (3, 3), 0)
     gray_blur_img = cv2.GaussianBlur(gray_img, (3, 3), 0)
+    gray_median_blur_img = cv2.medianBlur(gray_img, 3)
 
+    # Detail and noise - High pass filter
     gray_mvg_img = cal_high_freq(gray_img)
     gray_blur_mvg_img = cal_high_freq(gray_blur_img)
+    gray_median_blur_mvg_img = cal_high_freq(gray_median_blur_img)
 
-    b, g, r = cv2.split(img)
+    # Enhancement
     gamma_img = img ** (1 / gamma)
     blur_gamma_img = blur_img ** (1 / gamma)
     gray_blur_gamma_img = gray_blur_img ** (1 / gamma)
+    gray_median_blur_gamma__mvg_img = gray_median_blur_mvg_img ** (
+        1 / gray_median_blur_mvg_img
+    )
 
     gamma_img = normalized_image(gamma_img)
     blur_gamma_img = normalized_image(blur_gamma_img)
     gray_blur_gamma_img = normalized_image(gray_blur_gamma_img)
+    gray_median_blur_gamma__mvg_img = normalized_image(gray_median_blur_mvg_img)
 
-    low_freq = [blur_img, gray_blur_img]
-    high_freq = [gray_mvg_img, gray_blur_mvg_img]
-    enhancement = [gamma_img, blur_gamma_img, gray_blur_gamma_img]
+    low_freq = [blur_img, gray_blur_img, gray_median_blur_img]
+    high_freq = [gray_mvg_img, gray_blur_mvg_img, gray_median_blur_mvg_img]
+    enhancement = [
+        gamma_img,
+        blur_gamma_img,
+        gray_blur_gamma_img,
+        gray_median_blur_gamma__mvg_img,
+    ]
 
     feature = []
     all_in_one = [low_freq, high_freq, enhancement]

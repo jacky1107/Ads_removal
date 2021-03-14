@@ -52,15 +52,14 @@ gt = {"test_5": [2800, 7870], "test_6": [2776, 8320], "Video_1": [939, 5438]}
 video_name = "test_6"
 with open("features.npy", "rb") as f:
     features = np.load(f, allow_pickle=True)
+print(features.shape)
 
 total_imgs = len(features)
-print(features.shape)
 diff_features = ((features[: total_imgs - 1, :] - features[1:, :]) ** 2) ** 0.5
 total_diff_features = len(diff_features)
 
 
 # diff
-print(diff_features.shape)
 total_diff_features = len(diff_features)
 for i in range(len(diff_features[0])):
     upper = total_diff_features - 1
@@ -72,7 +71,6 @@ for i in range(len(diff_features[0])):
     plt.clf()
 
 # origin
-print(features.shape)
 for i in range(len(features[0])):
     x = np.arange(total_imgs)
     plt.plot(x, features[:, i])
@@ -82,12 +80,13 @@ for i in range(len(features[0])):
     plt.clf()
 
 
-new = get_segmentation(diff_features, 0, 45)
+new = get_segmentation(diff_features, 13, 280)
 print(new)
 assert len(new) % 2 == 0
 new = new.reshape((len(new) // 2, 2))
-new = merge_small_seg(new)
-new = merge_gap_between_seg(new)
+for i in range(5):
+    new = merge_small_seg(new, 30)
+    new = merge_gap_between_seg(new, 30)
 print(new)
 
 upper = total_diff_features - 1
