@@ -34,7 +34,7 @@ def normalized_image(img):
     return img
 
 
-total = {"test_5": 9693, "test_6": 10974, "Video_1": 10250}
+video_name = "test_6"
 
 normalized_std = np.array([0.229, 0.224, 0.225])
 normalized_mean = np.array([0.485, 0.456, 0.406])
@@ -44,7 +44,7 @@ avg_pool = nn.AvgPool2d((2, 2))
 
 count = 0
 features = []
-video_name = "test_5"
+total = {"test_5": 9693, "test_6": 10974, "Video_1": 10250}
 cap = cv2.VideoCapture(f"videos/{video_name}.avi")
 while True:
     res, img = cap.read()
