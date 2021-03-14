@@ -11,7 +11,7 @@ normalized_mean = np.array([0.485, 0.456, 0.406])
 c = 0
 total = 10250
 features = []
-video_name = "test_6"
+video_name = "test_5"
 cap = cv2.VideoCapture(f"videos/{video_name}.avi")
 while True:
     res, img = cap.read()
