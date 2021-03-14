@@ -48,9 +48,10 @@ def merge_gap_between_seg(segments, thres=15):
     return segments
 
 
+video_name = "Video_1"
+
 gt = {"test_5": [2800, 7870], "test_6": [2776, 8320], "Video_1": [939, 5438]}
-video_name = "test_6"
-with open("features.npy", "rb") as f:
+with open(f"{video_name}_features.npy", "rb") as f:
     features = np.load(f, allow_pickle=True)
 print(features.shape)
 
@@ -58,6 +59,14 @@ total_imgs = len(features)
 diff_features = ((features[: total_imgs - 1, :] - features[1:, :]) ** 2) ** 0.5
 total_diff_features = len(diff_features)
 
+features_index_thres = {
+    "test_5": [
+        (diff_features, 18, 750),
+        (diff_features, 19, 500),
+    ],
+    "test_6": [],
+    "Video_1": [],
+}
 
 # diff
 total_diff_features = len(diff_features)
@@ -67,7 +76,7 @@ for i in range(len(diff_features[0])):
     plt.plot(x, diff_features[:, i])
     plt.scatter(gt[video_name][0], 0, c="#1f33b4")
     plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-    plt.savefig(f"features/{video_name}_{i}_diff.png")
+    plt.savefig(f"features_local/{video_name}_{i}_diff.png")
     plt.clf()
 
 # origin
@@ -76,27 +85,31 @@ for i in range(len(features[0])):
     plt.plot(x, features[:, i])
     plt.scatter(gt[video_name][0], 0, c="#1f33b4")
     plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-    plt.savefig(f"features/{video_name}_{i}.png")
+    plt.savefig(f"features_local/{video_name}_{i}.png")
     plt.clf()
 
-
-new = get_segmentation(diff_features, 13, 280)
-print(new)
-assert len(new) % 2 == 0
-new = new.reshape((len(new) // 2, 2))
-for i in range(5):
+for f_index_thres in features_index_thres[video_name]:
+    index = f_index_thres[1]
+    new = get_segmentation(
+        f_index_thres[0],
+        f_index_thres[1],
+        f_index_thres[2],
+    )
+    print(new)
+    assert len(new) % 2 == 0
+    new = new.reshape((len(new) // 2, 2))
     new = merge_small_seg(new, 30)
     new = merge_gap_between_seg(new, 30)
-print(new)
+    print(new)
 
-upper = total_diff_features - 1
-x = np.arange(upper)
-y = np.zeros(total_diff_features - 1)
-for i in range(len(new)):
-    y[new[i][0] : new[i][1]] = 50
+    upper = total_diff_features - 1
+    x = np.arange(upper)
+    y = np.zeros(total_diff_features - 1)
+    for i in range(len(new)):
+        y[new[i][0] : new[i][1]] = 50
 
-plt.plot(x, y)
-plt.scatter(gt[video_name][0], 0, c="#1f33b4")
-plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-plt.savefig(f"features/{video_name}_res.png")
-plt.clf()
+    plt.plot(x, y)
+    plt.scatter(gt[video_name][0], 0, c="#1f33b4")
+    plt.scatter(gt[video_name][1], 0, c="#1f33b4")
+    plt.savefig(f"features_local/{video_name}_res_{index}.png")
+    plt.clf()

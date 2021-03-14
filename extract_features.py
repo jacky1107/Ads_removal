@@ -69,14 +69,12 @@ while True:
     gamma_img = img ** (1 / gamma)
     blur_gamma_img = blur_img ** (1 / gamma)
     gray_blur_gamma_img = gray_blur_img ** (1 / gamma)
-    gray_median_blur_gamma__mvg_img = gray_median_blur_mvg_img ** (
-        1 / gray_median_blur_mvg_img
-    )
+    gray_median_blur_gamma_img = gray_median_blur_img ** (1 / gamma)
 
     gamma_img = normalized_image(gamma_img)
     blur_gamma_img = normalized_image(blur_gamma_img)
     gray_blur_gamma_img = normalized_image(gray_blur_gamma_img)
-    gray_median_blur_gamma__mvg_img = normalized_image(gray_median_blur_mvg_img)
+    gray_median_blur_gamma_img = normalized_image(gray_median_blur_gamma_img)
 
     low_freq = [blur_img, gray_blur_img, gray_median_blur_img]
     high_freq = [gray_mvg_img, gray_blur_mvg_img, gray_median_blur_mvg_img]
@@ -84,7 +82,7 @@ while True:
         gamma_img,
         blur_gamma_img,
         gray_blur_gamma_img,
-        gray_median_blur_gamma__mvg_img,
+        gray_median_blur_gamma_img,
     ]
 
     feature = []
@@ -100,7 +98,7 @@ while True:
 
 features = np.array(features, dtype=object)
 print(features.shape)
-with open("features.npy", "wb") as f:
+with open(f"{video_name}_features.npy", "wb") as f:
     np.save(f, features)
 
 cap.release()
