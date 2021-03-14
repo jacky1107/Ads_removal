@@ -1,0 +1,91 @@
+import cv2
+import torch
+import numpy as np
+import matplotlib.pyplot as plt
+from skimage.metrics import peak_signal_noise_ratio, structural_similarity
+
+from torch import nn
+from torchvision.utils import save_image
+
+
+def cal_mean_std(img):
+    mean, std = cv2.meanStdDev(img)
+    std = np.mean(std)
+    mean = np.mean(mean)
+    return mean, std
+
+
+def cal_high_freq(img):
+    assert len(img.shape) == 2 "Expect gray scale image"
+    h, w = img.shape
+    tensor_img = torch.Tensor(img)
+    tensor_img = tensor_img.view(1, 1, h, w)
+    tensor_max_img = max_pool(tensor_img)
+    tensor_avg_img = avg_pool(tensor_img)
+    diff = abs(tensor_avg_img - tensor_max_img)
+    diff = (diff - torch.min(diff)) / torch.max(diff)
+    max_avg_diff_img = diff.numpy()
+    return max_avg_diff_img
+
+
+def normalized_image(img):
+    for i in range(3):
+        img = (img - normalized_mean[i]) / normalized_std[i]
+    return img
+
+
+total = {"test_5": 9693, "test_6": 10974, "Video_1": 10250}
+
+normalized_std = np.array([0.229, 0.224, 0.225])
+normalized_mean = np.array([0.485, 0.456, 0.406])
+gamma = 1.5
+max_pool = nn.MaxPool2d((2, 2))
+avg_pool = nn.AvgPool2d((2, 2))
+
+count = 0
+features = []
+video_name = "test_6"
+cap = cv2.VideoCapture(f"videos/{video_name}.avi")
+while True:
+    res, img = cap.read()
+    if not res:
+        break
+
+    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    blur_img = cv2.GaussianBlur(img, (3, 3), 0)
+    gray_blur_img = cv2.GaussianBlur(gray_img, (3, 3), 0)
+
+    gray_mvg_img = cal_high_freq(gray_img)
+    gray_blur_mvg_img = cal_high_freq(gray_blur_img)
+
+    b, g, r = cv2.split(img)
+    gamma_img = img ** (1 / gamma)
+    blur_gamma_img = blur_img ** (1 / gamma)
+    gray_blur_gamma_img = gray_blur_img ** (1 / gamma)
+
+    gamma_img = normalized_image(gamma_img)
+    blur_gamma_img = normalized_image(blur_gamma_img)
+    gray_blur_gamma_img = normalized_image(gray_blur_gamma_img)
+
+    low_freq = [blur_img, gray_blur_img]
+    high_freq = [gray_mvg_img, gray_blur_mvg_img]
+    enhancement = [gamma_img, blur_gamma_img, gray_blur_gamma_img]
+
+    feature = []
+    all_in_one = [low_freq, high_freq, enhancement]
+    for domain in all_in_one:
+        for img in domain:
+            mean, std = cal_mean_std(img)
+            feature.append(mean)
+            feature.append(std)
+    features.append(feature)
+    print(f"\r{round((count / total[video_name]) * 100, 2)}", end=" ")
+    count += 1
+
+features = np.array(features, dtype=object)
+print(features.shape)
+with open("features.npy", "wb") as f:
+    np.save(f, features)
+
+cap.release()
