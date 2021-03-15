@@ -121,13 +121,14 @@ def evaluation(res, gt, video_name, total_imgs):
     for i in range(total_imgs):
         if res[i] and (gt_f <= i and i < gt_s):
             confuse_matrix[0][0] += 1
-        elif res[i] and (i < gt_f or gt_s >= i):
+        elif res[i] and (i < gt_f or gt_s <= i):
             confuse_matrix[0][1] += 1
         elif not res[i] and (gt_f <= i and i < gt_s):
             confuse_matrix[1][0] += 1
-        elif not res[i] and (i < gt_f or gt_s >= i):
+        elif not res[i] and (i < gt_f or gt_s <= i):
             confuse_matrix[1][1] += 1
 
+    print(confuse_matrix)
     recall_rate = cal_recall(confuse_matrix)
     precision_rate = cal_precision(confuse_matrix)
 
@@ -145,4 +146,38 @@ def cal_seg_features(f_index_thres, index, segment):
         s1, s2 = segment[i][0], segment[i][1]
         mean = np.mean(diff_features[s1:s2, index])
         new_features.append(mean)
+
+    new_features = np.array(new_features)
+    new_features = min_max_scaler(new_features)
     return new_features, segment
+
+
+def min_max_scaler(features):
+    f_min = np.min(features)
+    f_max = np.max(features)
+    features = (features - f_min) / (f_max - f_min)
+    return features
+
+
+def cal_seg_features_eval(diff_features, seg_info, segment):
+    new_features = []
+    seg1 = np.array([0, segment[0][0] - 1])
+    seg2 = np.array([segment[-1][1] + 1, len(diff_features)])
+    segment = np.insert(segment, 0, seg1, axis=0)
+    segment = np.insert(segment, len(segment), seg2, axis=0)
+    for i in range(len(segment)):
+        s1, s2 = segment[i][0], segment[i][1]
+        mean = np.mean(diff_features[s1:s2, seg_info[0]])
+        new_features.append(mean)
+
+    new_features = np.array(new_features)
+    new_features = min_max_scaler(new_features)
+    return new_features, segment
+
+
+def lower_is_ads(value, thres):
+    return value < thres
+
+
+def greater_is_ads(value, thres):
+    return value > thres

@@ -6,27 +6,23 @@ from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 
 from utils import *
 
-
 cal_seg = True
-save_feature = True
+save_feature = False
 save_video_avi = False
-video_names = ["test_5", "Video_1", "test_6"]
+video_names = ["Video_1"]
 
 txt = ""
 for video_name in video_names:
     gt = {"test_5": [2800, 7870], "test_6": [2776, 8320], "Video_1": [939, 5438]}
 
-    file = f"{video_name}_features.npy"
-    if os.path.isfile(file):
-        with open(file, "rb") as f:
-            features = np.load(f, allow_pickle=True)
-        print(features.shape)
-    else:
+    file = f"{video_name}_all.npy"
+    if not os.path.isfile(file):
         break
-    break
-    f_min = np.min(features)
-    f_max = np.max(features)
-    features = (features - f_min) / (f_max - f_min)
+    with open(file, "rb") as f:
+        features = np.load(f, allow_pickle=True)
+    print(features.shape)
+
+    features = min_max_scaler(features)
     total_imgs = len(features)
     diff_features = ((features[: total_imgs - 1, :] - features[1:, :]) ** 2) ** 0.5
     total_diff_features = len(diff_features)
@@ -35,16 +31,15 @@ for video_name in video_names:
         "test_5": [
             (diff_features, 18, 0.24, 5),
             (diff_features, 19, 0.15, 5),
-            # (diff_features, 18, 750, 5),
-            # (diff_features, 19, 500, 5),
         ],
         "test_6": [
             (diff_features, 18, 0.18, 5),
             (diff_features, 19, 0.09, 5),
         ],
         "Video_1": [
-            (diff_features, 18, 0.25, 5),
-            (diff_features, 19, 0.12, 5),
+            # (diff_features, 18, 0.25, 5),
+            # (diff_features, 19, 0.101, 5),
+            (diff_features, 33, 0.00027, 5),
         ],
     }
 
@@ -72,7 +67,6 @@ for video_name in video_names:
     if cal_seg:
         all_res = []
         for f_index_thres in features_index_thres[video_name]:
-            index = f_index_thres[1]
             new = get_segmentation(
                 f_index_thres[0],
                 f_index_thres[1],
@@ -84,6 +78,7 @@ for video_name in video_names:
             # new = merge_gap_between_seg(new, f_index_thres[3])
             print(new)
 
+            seg_index = f_index_thres[1]
             # =====
             for index in range(features.shape[1]):
                 new_features, new_segments = cal_seg_features(f_index_thres, index, new)
@@ -91,11 +86,13 @@ for video_name in video_names:
                 x = np.arange(upper)
                 y = np.zeros(total_diff_features)
                 for i in range(len(new_segments)):
+                    if new_features[i] > 0.7:
+                        new_features[i] = 0
                     y[new_segments[i][0] : new_segments[i][1]] = new_features[i]
                 plt.plot(x, y)
                 plt.scatter(gt[video_name][0], 0, c="#1f33b4")
                 plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-                plt.savefig(f"features_local/{video_name}/test_{index}.png")
+                plt.savefig(f"features_local/{video_name}/test_{seg_index}_{index}.png")
                 plt.clf()
             # =====
 
@@ -109,39 +106,5 @@ for video_name in video_names:
             plt.plot(x, y)
             plt.scatter(gt[video_name][0], 0, c="#1f33b4")
             plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-            plt.savefig(f"features_local/{video_name}/res_{index}.png")
+            plt.savefig(f"features_local/{video_name}/res_{seg_index}.png")
             plt.clf()
-
-            if save_video_avi:
-                save_video(video_name, index, y)
-
-
-#         upper = total_diff_features
-#         x = np.arange(upper)
-#         y = np.zeros(total_diff_features)
-#         for i in range(upper):
-#             unit = False
-#             for res in all_res:
-#                 unit = unit or (res[i] != 0)
-#             if unit:
-#                 y[i] = 1
-
-#         plt.plot(x, y)
-#         plt.scatter(gt[video_name][0], 0, c="#1f33b4")
-#         plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-#         plt.savefig(f"features_local/{video_name}/res.png")
-#         plt.clf()
-#         y = np.append(y, 0)
-
-#         recall_rate, precision_rate = evaluation(y, gt, video_name, total_imgs)
-
-#         txt += "================================\n"
-#         txt += f"{video_name} result: \n"
-#         txt += f"Recall rate: {recall_rate}\n"
-#         txt += f"Precision rate: {precision_rate}\n"
-
-
-# if cal_seg:
-#     txt += "================================\n"
-#     with open("res.txt", "w") as f:
-#         f.write(txt)
