@@ -49,7 +49,7 @@ def merge_gap_between_seg(segments, thres=15):
 
 
 save_feature = False
-video_name = "test_5"
+video_name = "test_6"
 
 gt = {"test_5": [2800, 7870], "test_6": [2776, 8320], "Video_1": [939, 5438]}
 with open(f"{video_name}_features.npy", "rb") as f:
