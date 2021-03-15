@@ -1,3 +1,4 @@
+import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,17 +8,22 @@ from utils import *
 
 
 cal_seg = True
-save_feature = False
+save_feature = True
 save_video_avi = False
-video_names = ["test_5", "Video_1", "test_6"]  # , "Video_1"]
+video_names = ["test_5", "Video_1", "test_6"]
 
 txt = ""
 for video_name in video_names:
     gt = {"test_5": [2800, 7870], "test_6": [2776, 8320], "Video_1": [939, 5438]}
-    with open(f"{video_name}_features.npy", "rb") as f:
-        features = np.load(f, allow_pickle=True)
-    print(features.shape)
 
+    file = f"{video_name}_features.npy"
+    if os.path.isfile(file):
+        with open(file, "rb") as f:
+            features = np.load(f, allow_pickle=True)
+        print(features.shape)
+    else:
+        break
+    break
     f_min = np.min(features)
     f_max = np.max(features)
     features = (features - f_min) / (f_max - f_min)
@@ -51,7 +57,7 @@ for video_name in video_names:
             plt.plot(x, diff_features[:, i])
             plt.scatter(gt[video_name][0], 0, c="#1f33b4")
             plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-            plt.savefig(f"features_local/{video_name}_{i}_diff.png")
+            plt.savefig(f"features_local/{video_name}/{i}_diff.png")
             plt.clf()
 
         # origin
@@ -60,7 +66,7 @@ for video_name in video_names:
             plt.plot(x, features[:, i])
             plt.scatter(gt[video_name][0], 0, c="#1f33b4")
             plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-            plt.savefig(f"features_local/{video_name}_{i}.png")
+            plt.savefig(f"features_local/{video_name}/{i}.png")
             plt.clf()
 
     if cal_seg:
@@ -89,7 +95,7 @@ for video_name in video_names:
                 plt.plot(x, y)
                 plt.scatter(gt[video_name][0], 0, c="#1f33b4")
                 plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-                plt.savefig(f"features_local/{video_name}_test_{index}.png")
+                plt.savefig(f"features_local/{video_name}/test_{index}.png")
                 plt.clf()
             # =====
 
@@ -103,7 +109,7 @@ for video_name in video_names:
             plt.plot(x, y)
             plt.scatter(gt[video_name][0], 0, c="#1f33b4")
             plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-            plt.savefig(f"features_local/{video_name}_res_{index}.png")
+            plt.savefig(f"features_local/{video_name}/res_{index}.png")
             plt.clf()
 
             if save_video_avi:
@@ -123,7 +129,7 @@ for video_name in video_names:
 #         plt.plot(x, y)
 #         plt.scatter(gt[video_name][0], 0, c="#1f33b4")
 #         plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-#         plt.savefig(f"features_local/{video_name}_res.png")
+#         plt.savefig(f"features_local/{video_name}/res.png")
 #         plt.clf()
 #         y = np.append(y, 0)
 
