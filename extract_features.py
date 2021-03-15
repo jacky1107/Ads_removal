@@ -34,7 +34,7 @@ def normalized_image(img):
     return img
 
 
-video_name = "test_6"
+video_name = "Video_1"
 print(video_name)
 
 normalized_std = np.array([0.229, 0.224, 0.225])
