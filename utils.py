@@ -4,6 +4,58 @@ import matplotlib.pyplot as plt
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 
 
+def reshape_segmentation(segment):
+    new = []
+    f = segment[0]
+    for i in range(1, len(segment)):
+        s = segment[i]
+        new.append([f, s])
+        f = s + 1
+    new = np.array(new)
+    return new
+
+
+def save_video(video_name, index, features):
+    features = np.append(features, 0)
+    resolution = {
+        "test_5": (240, 352, 3),
+        "test_6": (240, 352, 3),
+        "Video_1": (480, 720, 3),
+    }
+
+    cap = cv2.VideoCapture(f"videos/{video_name}.avi")
+    w = int(cap.get(3))
+    h = int(cap.get(4))
+    out = cv2.VideoWriter(
+        f"results/{video_name}_{index}.avi",
+        cv2.VideoWriter_fourcc(*"MJPG"),
+        30.0,
+        (w, h),
+    )
+    i = 0
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        org = (50, 50)
+        fontScale = 1
+        color = (255, 0, 0)
+        thickness = 2
+
+        if features[i]:
+            cv2.putText(
+                frame, "Ad", (50, 50), font, fontScale, color, thickness, cv2.LINE_AA
+            )
+
+        out.write(frame)
+        i += 1
+    cap.release()
+    out.release()
+    cv2.destroyAllWindows()
+
+
 def get_segmentation(diff_features, index, thres):
     results = []
     for i in range(len(diff_features)):
@@ -80,3 +132,17 @@ def evaluation(res, gt, video_name, total_imgs):
     precision_rate = cal_precision(confuse_matrix)
 
     return recall_rate, precision_rate
+
+
+def cal_seg_features(f_index_thres, index, segment):
+    new_features = []
+    diff_features = f_index_thres[0]
+    seg1 = np.array([0, segment[0][0] - 1])
+    seg2 = np.array([segment[-1][1] + 1, len(diff_features)])
+    segment = np.insert(segment, 0, seg1, axis=0)
+    segment = np.insert(segment, len(segment), seg2, axis=0)
+    for i in range(len(segment)):
+        s1, s2 = segment[i][0], segment[i][1]
+        mean = np.mean(diff_features[s1:s2, index])
+        new_features.append(mean)
+    return new_features, segment
