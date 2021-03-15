@@ -22,17 +22,17 @@ for video_name in video_names:
 
     features_index_thres = {
         "test_5": [
-            (diff_features, 18, 750, 30),
-            (diff_features, 19, 500, 30),
+            (diff_features, 18, 750, 5),
+            (diff_features, 19, 500, 5),
         ],
         "test_6": [
             (diff_features, 18, 650, 30),
-            (diff_features, 19, 280, 30),
+            (diff_features, 19, 280, 5),
         ],
         "Video_1": [
-            # (diff_features, 10, 0.3, 30),
-            (diff_features, 13, 330, 30),
-            (diff_features, 18, 600, 30),
+            # (diff_features, 10, 0.3, 25),
+            (diff_features, 13, 330, 5),
+            (diff_features, 18, 600, 5),
             # (diff_features, 19, 350, 30),
         ],
     }
