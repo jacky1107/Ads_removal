@@ -78,26 +78,26 @@ while True:
     # gray_blur_gamma_img = gray_blur_img ** (1 / gamma)
     # gray_median_blur_gamma_img = gray_median_blur_img ** (1 / gamma)
 
-    gamma_img_g_m_i = img_g_m_i ** (1 / gamma)
-    gamma_img_g_b_m_i = img_g_b_m_i ** (1 / gamma)
-    gamma_img_g_mb_m_i = img_g_mb_m_i ** (1 / gamma)
+    # gamma_img_g_m_i = img_g_m_i ** (1 / gamma)
+    # gamma_img_g_b_m_i = img_g_b_m_i ** (1 / gamma)
+    # gamma_img_g_mb_m_i = img_g_mb_m_i ** (1 / gamma)
 
     # gamma_img = normalized_image(gamma_img)
     # blur_gamma_img = normalized_image(blur_gamma_img)
     # gray_blur_gamma_img = normalized_image(gray_blur_gamma_img)
     # gray_median_blur_gamma_img = normalized_image(gray_median_blur_gamma_img)
 
-    gamma_img_g_m_i = gamma_img_g_m_i ** (1 / gamma)
-    gamma_img_g_b_m_i = gamma_img_g_b_m_i ** (1 / gamma)
-    gamma_img_g_mb_m_i = gamma_img_g_mb_m_i ** (1 / gamma)
+    # gamma_img_g_m_i = gamma_img_g_m_i ** (1 / gamma)
+    # gamma_img_g_b_m_i = gamma_img_g_b_m_i ** (1 / gamma)
+    # gamma_img_g_mb_m_i = gamma_img_g_mb_m_i ** (1 / gamma)
 
-    low_freq = [img_g_m_i, img_g_b_m_i, img_g_mb_m_i]
-    high_freq = [gray_mvg_img, gray_blur_mvg_img, gray_median_blur_mvg_img]
-    enhancement = [
-        gamma_img_g_m_i,
-        gamma_img_g_b_m_i,
-        gamma_img_g_mb_m_i,
-    ]
+    # low_freq = [img_g_m_i, img_g_b_m_i, img_g_mb_m_i]
+    # high_freq = [gray_mvg_img, gray_blur_mvg_img, gray_median_blur_mvg_img]
+    # enhancement = [
+    #     gamma_img_g_m_i,
+    #     gamma_img_g_b_m_i,
+    #     gamma_img_g_mb_m_i,
+    # ]
 
     # low_freq = [blur_img, gray_blur_img, gray_median_blur_img]
     # high_freq = [gray_mvg_img, gray_blur_mvg_img, gray_median_blur_mvg_img]
@@ -119,9 +119,9 @@ while True:
     print(f"\r{round((count / total[video_name]) * 100, 2)}", end=" ")
     count += 1
 
-features = np.array(features, dtype=object)
-print(features.shape)
-with open(f"{video_name}_features_20.npy", "wb") as f:
-    np.save(f, features)
+# features = np.array(features, dtype=object)
+# print(features.shape)
+# with open(f"{video_name}_features_20.npy", "wb") as f:
+#     np.save(f, features)
 
 cap.release()

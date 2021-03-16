@@ -1,9 +1,9 @@
 videos/
 .vscode/
 results/
-features_local/test_5/result
-features_local/test_6/result
-features_local/Video_1/result
+features/test_5/result
+features/test_6/result
+features/Video_1/result
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
