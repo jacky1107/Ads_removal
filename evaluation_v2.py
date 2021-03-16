@@ -158,7 +158,7 @@ for video_name in video_names:
     final_result[: len(new_features)] = new_features
     print(final_result.shape)
 
-    save_video(video_name, seg, final_result, final_filter[video_name][-1])
+    # save_video(video_name, seg, final_result, final_filter[video_name][-1])
 
     recall_rate, precision_rate = evaluation_v2(
         final_result, gt, video_name, final_filter[video_name][-1]
