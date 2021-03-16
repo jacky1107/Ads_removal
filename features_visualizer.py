@@ -25,8 +25,9 @@ for video_name in video_names:
     for i in range(len(diff_features[0])):
         x = np.arange(total_diff_features)
         plt.plot(x, diff_features[:, i])
-        plt.scatter(gt[video_name][0], 0, c="#1f33b4")
-        plt.scatter(gt[video_name][1], 0, c="#1f33b4")
+        mean = np.mean(diff_features[:, i])
+        plt.scatter(gt[video_name][0], mean, c="#1f33b4")
+        plt.scatter(gt[video_name][1], mean, c="#1f33b4")
         plt.savefig(f"features/{video_name}/all/{i}_diff.png")
         plt.clf()
 
@@ -34,7 +35,8 @@ for video_name in video_names:
     for i in range(len(features[0])):
         x = np.arange(total_imgs)
         plt.plot(x, features[:, i])
-        plt.scatter(gt[video_name][0], 0, c="#1f33b4")
-        plt.scatter(gt[video_name][1], 0, c="#1f33b4")
+        mean = np.mean(features[:, i])
+        plt.scatter(gt[video_name][0], mean, c="#1f33b4")
+        plt.scatter(gt[video_name][1], mean, c="#1f33b4")
         plt.savefig(f"features/{video_name}/all/{i}.png")
         plt.clf()
