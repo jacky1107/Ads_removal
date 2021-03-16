@@ -52,12 +52,23 @@ def save_video(video_name, new, final_result, thres):
     out = cv2.VideoWriter(name, fourcc, 30.0, (w, h))
 
     index = 0
+    record = False
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
 
+        if i >= f2:
+            j += 1
+            record = True
+            if j >= len(new):
+                break
+            f1, f2 = new[j][0], new[j][1]
+
         if final_result[i] > thres:
+            if record:
+                index += 1
+                record = False
             font = cv2.FONT_HERSHEY_SIMPLEX
             org = (50, 50)
             fontScale = 1.5
@@ -73,14 +84,10 @@ def save_video(video_name, new, final_result, thres):
                 thickness,
                 cv2.LINE_AA,
             )
-            index += 1
+        else:
+            record = True
 
         out.write(frame)
-        if i >= f2:
-            j += 1
-            if j >= len(new):
-                break
-            f1, f2 = new[j][0], new[j][1]
         i += 1
 
     cap.release()
