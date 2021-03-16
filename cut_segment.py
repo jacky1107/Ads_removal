@@ -6,7 +6,7 @@ from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 
 from utils import *
 
-save = False
+save = True
 video_names = ["test_5", "test_6", "Video_1"]
 features_index_thres = {
     "test_5": [
@@ -61,16 +61,16 @@ for video_name in video_names:
                 plt.scatter(gt[video_name][0], 0, c="#1f33b4")
                 plt.scatter(gt[video_name][1], 0, c="#1f33b4")
                 plt.savefig(
-                    f"features_local/{video_name}/segment/test_{seg_index}_{index}.png"
+                    f"features/{video_name}/segment/test_{seg_index}_{index}.png"
                 )
                 plt.clf()
 
             all_res.append(y)
 
-        # all_res = np.array(all_res, dtype=object)
-        # print(all_res.shape)
-        # with open(f"new_{video_name}_{seg_index}.npy", "wb") as f:
-        #     np.save(f, all_res)
+        all_res = np.array(all_res, dtype=object)
+        print(all_res.shape)
+        with open(f"new_{video_name}_{seg_index}.npy", "wb") as f:
+            np.save(f, all_res)
 
         x = np.arange(total_diff_features)
         y = np.zeros(total_diff_features)
@@ -81,5 +81,5 @@ for video_name in video_names:
             plt.plot(x, y)
             plt.scatter(gt[video_name][0], 0, c="#1f33b4")
             plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-            plt.savefig(f"features_local/{video_name}/segment/res_{seg_index}.png")
+            plt.savefig(f"features/{video_name}/segment/res_{seg_index}.png")
             plt.clf()

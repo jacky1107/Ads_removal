@@ -110,7 +110,7 @@ for video_name in video_names:
         plt.plot(x, fuse)
         plt.scatter(gt[video_name][0], 0, c="#1f33b4")
         plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-        plt.savefig(f"features_local/{video_name}/segment/fuse_{seg_index}.png")
+        plt.savefig(f"features/{video_name}/segment/fuse_{seg_index}.png")
         plt.clf()
 
     fuse = 0
@@ -122,7 +122,7 @@ for video_name in video_names:
     plt.plot(x, fuse)
     plt.scatter(gt[video_name][0], 0, c="#1f33b4")
     plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-    plt.savefig(f"features_local/{video_name}/fuse.png")
+    plt.savefig(f"features/{video_name}/fuse.png")
     plt.clf()
 
     # filter
@@ -142,7 +142,7 @@ for video_name in video_names:
     plt.plot(x, diff)
     plt.scatter(gt[video_name][0], 0, c="#1f33b4")
     plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-    plt.savefig(f"features_local/{video_name}/diff.png")
+    plt.savefig(f"features/{video_name}/diff.png")
     plt.clf()
 
     new_features = cal_seg_features_v2(fuse, seg)
@@ -150,7 +150,7 @@ for video_name in video_names:
     plt.plot(x, new_features)
     plt.scatter(gt[video_name][0], 0, c="#1f33b4")
     plt.scatter(gt[video_name][1], 0, c="#1f33b4")
-    plt.savefig(f"features_local/{video_name}/final_result.png")
+    plt.savefig(f"features/{video_name}/final_result.png")
     plt.clf()
 
     # Evaluation
@@ -158,7 +158,7 @@ for video_name in video_names:
     final_result[: len(new_features)] = new_features
     print(final_result.shape)
 
-    # save_video(video_name, seg, final_result, final_filter[video_name][-1])
+    save_video(video_name, seg, final_result, final_filter[video_name][-1])
 
     recall_rate, precision_rate = evaluation_v2(
         final_result, gt, video_name, final_filter[video_name][-1]

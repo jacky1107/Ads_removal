@@ -45,7 +45,7 @@ def save_video(video_name, new, final_result, thres):
     i, j = 0, 0
     f1, f2 = new[j][0], new[j][1]
     cap = cv2.VideoCapture(f"videos/{video_name}.avi")
-    name = f"features_local/{video_name}/result/final_result.avi"
+    name = f"features/{video_name}/result/final_result.avi"
     fourcc = cv2.VideoWriter_fourcc(*"MJPG")
     w = int(cap.get(3))
     h = int(cap.get(4))
@@ -65,7 +65,7 @@ def save_video(video_name, new, final_result, thres):
             thickness = 2
             cv2.putText(
                 frame,
-                f"Ad_{j}",
+                f"Ad_{index}",
                 org,
                 font,
                 fontScale,
@@ -73,6 +73,7 @@ def save_video(video_name, new, final_result, thres):
                 thickness,
                 cv2.LINE_AA,
             )
+            index += 1
 
         out.write(frame)
         if i >= f2:
