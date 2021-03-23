@@ -1,13 +1,5 @@
 ================================
-test_5 result: 
-Recall rate: 1.0
-Precision rate: 0.9998028002366397
-================================
-test_6 result: 
-Recall rate: 0.9330808080808081
-Precision rate: 1.0
-================================
-Video_1 result: 
-Recall rate: 0.9864414314292065
-Precision rate: 0.9886388950768545
+TVshow_7 result: 
+Recall rate: 0.6662230503060953
+Precision rate: 0.4101261674586269
 ================================
