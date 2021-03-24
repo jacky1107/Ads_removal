@@ -203,6 +203,27 @@ def evaluation(res, gt, video_name, total_imgs):
     return recall_rate, precision_rate
 
 
+def evaluation_v3(res, gt, video_name, thres):
+    total = len(res)
+    confuse_matrix = [[0, 0], [0, 0]]
+    for gt_f, gt_s in gt[video_name]:
+        for i in range(total):
+            if res[i] > thres and (gt_f <= i and i < gt_s):
+                confuse_matrix[0][0] += 1
+            elif res[i] > thres and (i < gt_f or gt_s <= i):
+                confuse_matrix[0][1] += 1
+            elif res[i] <= thres and (gt_f <= i and i < gt_s):
+                confuse_matrix[1][0] += 1
+            elif res[i] <= thres and (i < gt_f or gt_s <= i):
+                confuse_matrix[1][1] += 1
+
+    print(confuse_matrix)
+    recall_rate = cal_recall(confuse_matrix)
+    precision_rate = cal_precision(confuse_matrix)
+
+    return recall_rate, precision_rate
+
+
 def evaluation_v2(res, gt, video_name, thres):
     gt_f, gt_s = gt[video_name]
     total = len(res)

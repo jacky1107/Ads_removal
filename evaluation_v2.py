@@ -6,7 +6,7 @@ from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 
 from utils import *
 
-video_names = ["test_5", "test_6", "Video_1"]
+video_names = ["TVshow_7"]  # ["test_5", "test_6", "Video_1"]
 features_index_thres = {
     "test_5": [
         (
@@ -72,6 +72,7 @@ gt = {
     "test_5": [2800, 7870],
     "test_6": [2776, 8320],
     "Video_1": [939, 5438],
+    "TVshow_7": [[14389, 18143], [28133, 31893]],
 }
 
 total_recall = 0
@@ -81,7 +82,6 @@ txt = ""
 for video_name in video_names:
     final_results = []
 
-    flag = False
     for f_index_thres in features_index_thres[video_name]:
         seg_index = f_index_thres[0]
         file = f"new_{video_name}_{seg_index}.npy"
@@ -89,13 +89,11 @@ for video_name in video_names:
             break
         with open(file, "rb") as f:
             features = np.load(f, allow_pickle=True)
-        print(features.shape)
         f_num, total = features.shape
 
         if len(f_index_thres[1]) == 0:
             break
 
-        flag = True
         fuse = 1
         for index, func in f_index_thres[1]:
             feature = features[index]
@@ -108,8 +106,11 @@ for video_name in video_names:
 
         x = np.arange(total)
         plt.plot(x, fuse)
-        plt.scatter(gt[video_name][0], 0, c="#1f33b4")
-        plt.scatter(gt[video_name][1], 0, c="#1f33b4")
+        for segs in gt[video_name]:
+            for x in segs:
+                plt.axvline(x=x, color="r", linestyle=":")
+        # plt.scatter(gt[video_name][0], 0, c="#1f33b4")
+        # plt.scatter(gt[video_name][1], 0, c="#1f33b4")
         plt.savefig(f"features/{video_name}/segment/fuse_{seg_index}.png")
         plt.clf()
 
@@ -120,8 +121,11 @@ for video_name in video_names:
 
     x = np.arange(total)
     plt.plot(x, fuse)
-    plt.scatter(gt[video_name][0], 0, c="#1f33b4")
-    plt.scatter(gt[video_name][1], 0, c="#1f33b4")
+    for segs in gt[video_name]:
+        for x in segs:
+            plt.axvline(x=x, color="r", linestyle=":")
+    # plt.scatter(gt[video_name][0], 0, c="#1f33b4")
+    # plt.scatter(gt[video_name][1], 0, c="#1f33b4")
     plt.savefig(f"features/{video_name}/fuse.png")
     plt.clf()
 
@@ -136,29 +140,34 @@ for video_name in video_names:
     seg = reshape_segmentation(seg)
     seg = append_first_last_frame(diff, seg)
     seg = merge_small_seg_v2(seg, final_filter[video_name][1])
-    print(seg)
 
     x = np.arange(total)
     plt.plot(x, diff)
-    plt.scatter(gt[video_name][0], 0, c="#1f33b4")
-    plt.scatter(gt[video_name][1], 0, c="#1f33b4")
+    for segs in gt[video_name]:
+        for x in segs:
+            plt.axvline(x=x, color="r", linestyle=":")
+    # plt.scatter(gt[video_name][0], 0, c="#1f33b4")
+    # plt.scatter(gt[video_name][1], 0, c="#1f33b4")
     plt.savefig(f"features/{video_name}/diff.png")
     plt.clf()
 
     new_features = cal_seg_features_v2(fuse, seg)
     x = np.arange(total)
     plt.plot(x, new_features)
-    plt.scatter(gt[video_name][0], 0, c="#1f33b4")
-    plt.scatter(gt[video_name][1], 0, c="#1f33b4")
+    for segs in gt[video_name]:
+        for x in segs:
+            plt.axvline(x=x, color="r", linestyle=":")
+    # plt.scatter(gt[video_name][0], 0, c="#1f33b4")
+    # plt.scatter(gt[video_name][1], 0, c="#1f33b4")
     plt.savefig(f"features/{video_name}/final_result.png")
     plt.clf()
 
     # Evaluation
     final_result = np.zeros(len(new_features) + 1)
     final_result[: len(new_features)] = new_features
-    print(final_result.shape)
+    print(final_result)
 
-    save_video(video_name, seg, final_result, final_filter[video_name][-1])
+    # save_video(video_name, seg, final_result, final_filter[video_name][-1])
 
     recall_rate, precision_rate = evaluation_v2(
         final_result, gt, video_name, final_filter[video_name][-1]

@@ -6,6 +6,7 @@ from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 
 from torch import nn
 from torchvision.utils import save_image
+from utils import min_max_scaler
 
 
 def cal_mean_std(img):
@@ -36,7 +37,7 @@ def normalized_image(img):
     return img
 
 
-video_name = "test_6"
+video_name = "TVshow_7"
 print(video_name)
 
 normalized_std = np.array([0.229, 0.224, 0.225])
@@ -47,7 +48,7 @@ avg_pool = nn.AvgPool2d((2, 2), 1, padding=1)
 
 count = 0
 features = []
-total = {"test_5": 9693, "test_6": 10974, "Video_1": 10250}
+total = {"test_5": 9693, "test_6": 10974, "Video_1": 10250, "TVshow_7": 42826}
 cap = cv2.VideoCapture(f"videos/{video_name}.avi")
 while True:
     res, img = cap.read()
@@ -73,43 +74,50 @@ while True:
     img_g_mb_m_i = abs(img - gray_median_blur_mvg_img)
 
     # Enhancement
-    # gamma_img = img ** (1 / gamma)
-    # blur_gamma_img = blur_img ** (1 / gamma)
-    # gray_blur_gamma_img = gray_blur_img ** (1 / gamma)
-    # gray_median_blur_gamma_img = gray_median_blur_img ** (1 / gamma)
+    gamma_img = img ** (1 / gamma)
+    blur_gamma_img = blur_img ** (1 / gamma)
+    gray_blur_gamma_img = gray_blur_img ** (1 / gamma)
+    gray_median_blur_gamma_img = gray_median_blur_img ** (1 / gamma)
 
-    # gamma_img_g_m_i = img_g_m_i ** (1 / gamma)
-    # gamma_img_g_b_m_i = img_g_b_m_i ** (1 / gamma)
-    # gamma_img_g_mb_m_i = img_g_mb_m_i ** (1 / gamma)
+    gamma_img_g_m_i = img_g_m_i ** (1 / gamma)
+    gamma_img_g_b_m_i = img_g_b_m_i ** (1 / gamma)
+    gamma_img_g_mb_m_i = img_g_mb_m_i ** (1 / gamma)
 
-    # gamma_img = normalized_image(gamma_img)
-    # blur_gamma_img = normalized_image(blur_gamma_img)
-    # gray_blur_gamma_img = normalized_image(gray_blur_gamma_img)
-    # gray_median_blur_gamma_img = normalized_image(gray_median_blur_gamma_img)
+    gamma_img = normalized_image(gamma_img)
+    blur_gamma_img = normalized_image(blur_gamma_img)
+    gray_blur_gamma_img = normalized_image(gray_blur_gamma_img)
+    gray_median_blur_gamma_img = normalized_image(gray_median_blur_gamma_img)
 
-    # gamma_img_g_m_i = gamma_img_g_m_i ** (1 / gamma)
-    # gamma_img_g_b_m_i = gamma_img_g_b_m_i ** (1 / gamma)
-    # gamma_img_g_mb_m_i = gamma_img_g_mb_m_i ** (1 / gamma)
+    gamma_img_g_m_i = gamma_img_g_m_i ** (1 / gamma)
+    gamma_img_g_b_m_i = gamma_img_g_b_m_i ** (1 / gamma)
+    gamma_img_g_mb_m_i = gamma_img_g_mb_m_i ** (1 / gamma)
 
-    # low_freq = [img_g_m_i, img_g_b_m_i, img_g_mb_m_i]
-    # high_freq = [gray_mvg_img, gray_blur_mvg_img, gray_median_blur_mvg_img]
-    # enhancement = [
-    #     gamma_img_g_m_i,
-    #     gamma_img_g_b_m_i,
-    #     gamma_img_g_mb_m_i,
-    # ]
+    low_freq1 = [img_g_m_i, img_g_b_m_i, img_g_mb_m_i]
+    high_freq1 = [gray_mvg_img, gray_blur_mvg_img, gray_median_blur_mvg_img]
+    enhancement1 = [
+        gamma_img_g_m_i,
+        gamma_img_g_b_m_i,
+        gamma_img_g_mb_m_i,
+    ]
 
-    # low_freq = [blur_img, gray_blur_img, gray_median_blur_img]
-    # high_freq = [gray_mvg_img, gray_blur_mvg_img, gray_median_blur_mvg_img]
-    # enhancement = [
-    #     gamma_img,
-    #     blur_gamma_img,
-    #     gray_blur_gamma_img,
-    #     gray_median_blur_gamma_img,
-    # ]
+    low_freq2 = [blur_img, gray_blur_img, gray_median_blur_img]
+    high_freq2 = [gray_mvg_img, gray_blur_mvg_img, gray_median_blur_mvg_img]
+    enhancement2 = [
+        gamma_img,
+        blur_gamma_img,
+        gray_blur_gamma_img,
+        gray_median_blur_gamma_img,
+    ]
 
     feature = []
-    all_in_one = [low_freq, high_freq, enhancement]
+    all_in_one = [
+        low_freq2,
+        high_freq2,
+        enhancement2,
+        low_freq1,
+        high_freq1,
+        enhancement1,
+    ]
     for domain in all_in_one:
         for img in domain:
             mean, std = cal_mean_std(img)
@@ -119,9 +127,10 @@ while True:
     print(f"\r{round((count / total[video_name]) * 100, 2)}", end=" ")
     count += 1
 
-# features = np.array(features, dtype=object)
-# print(features.shape)
-# with open(f"{video_name}_features_20.npy", "wb") as f:
-#     np.save(f, features)
+features = np.array(features, dtype=object)
+print(features.shape)
+with open(f"{video_name}_features.npy", "wb") as f:
+    np.save(f, features)
 
 cap.release()
+cv2.destroyAllWindows()
