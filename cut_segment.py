@@ -65,10 +65,9 @@ for video_name in video_names:
         features = np.load(f, allow_pickle=True)
     print(features.shape)
 
-    features = min_max_scaler(features)
+    # features = min_max_scaler(features)
     total_imgs = len(features)
-    diff_features = (features[: total_imgs - 1, :] -
-                     features[1:, :]) ** 2  # ** 0.5
+    diff_features = (features[: total_imgs - 1, :] - features[1:, :]) ** 2  # ** 0.5
     diff_features = min_max_scaler(diff_features)
     total_diff_features = len(diff_features)
     for i in range(total_diff_features):
@@ -90,9 +89,9 @@ for video_name in video_names:
             y = np.zeros(total_diff_features)
             for i in range(len(new)):
                 if new_features[i] is np.nan:
-                    y[new[i][0]: new[i][1]] = 0
+                    y[new[i][0] : new[i][1]] = 0
                 else:
-                    y[new[i][0]: new[i][1]] = new_features[i]
+                    y[new[i][0] : new[i][1]] = new_features[i]
 
             if save:
                 plt.plot(x, y)
@@ -114,7 +113,7 @@ for video_name in video_names:
         x = np.arange(total_diff_features)
         y = np.zeros(total_diff_features)
         for i in range(len(new)):
-            y[new[i][0]: new[i][1]] = i
+            y[new[i][0] : new[i][1]] = i
 
         if save:
             plt.plot(x, y)

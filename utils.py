@@ -180,6 +180,14 @@ def cal_precision(confuse_matrix):
     return tp / (tp + fp)
 
 
+def cal_acc(confuse_matrix):
+    tp = confuse_matrix[0][0]
+    fn = confuse_matrix[1][0]
+    fp = confuse_matrix[0][1]
+    tn = confuse_matrix[1][1]
+    return (tp + tn) / (tp + tn + fp + fn)
+
+
 def evaluation(res, gt, video_name, total_imgs):
     gt_f, gt_s = gt[video_name]
     tar = np.zeros(total_imgs)
@@ -239,8 +247,10 @@ def evaluation_v2(res, gt, video_name, thres):
             confuse_matrix[1][1] += 1
 
     print(confuse_matrix)
+    acc = cal_acc(confuse_matrix)
     recall_rate = cal_recall(confuse_matrix)
     precision_rate = cal_precision(confuse_matrix)
+    print(acc)
 
     return recall_rate, precision_rate
 

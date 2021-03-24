@@ -6,7 +6,7 @@ from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 
 from utils import *
 
-video_names = ["TVshow_7"]  # ["test_5", "test_6", "Video_1"]
+video_names = ["test_5", "test_6", "Video_1"]
 features_index_thres = {
     "test_5": [
         (
@@ -106,9 +106,9 @@ for video_name in video_names:
 
         x = np.arange(total)
         plt.plot(x, fuse)
-        for segs in gt[video_name]:
-            for x in segs:
-                plt.axvline(x=x, color="r", linestyle=":")
+        # for segs in gt[video_name]:
+        #     for x in segs:
+        #         plt.axvline(x=x, color="r", linestyle=":")
         # plt.scatter(gt[video_name][0], 0, c="#1f33b4")
         # plt.scatter(gt[video_name][1], 0, c="#1f33b4")
         plt.savefig(f"features/{video_name}/segment/fuse_{seg_index}.png")
@@ -121,9 +121,9 @@ for video_name in video_names:
 
     x = np.arange(total)
     plt.plot(x, fuse)
-    for segs in gt[video_name]:
-        for x in segs:
-            plt.axvline(x=x, color="r", linestyle=":")
+    # for segs in gt[video_name]:
+    #     for x in segs:
+    #         plt.axvline(x=x, color="r", linestyle=":")
     # plt.scatter(gt[video_name][0], 0, c="#1f33b4")
     # plt.scatter(gt[video_name][1], 0, c="#1f33b4")
     plt.savefig(f"features/{video_name}/fuse.png")
@@ -143,9 +143,9 @@ for video_name in video_names:
 
     x = np.arange(total)
     plt.plot(x, diff)
-    for segs in gt[video_name]:
-        for x in segs:
-            plt.axvline(x=x, color="r", linestyle=":")
+    # for segs in gt[video_name]:
+    #     for x in segs:
+    #         plt.axvline(x=x, color="r", linestyle=":")
     # plt.scatter(gt[video_name][0], 0, c="#1f33b4")
     # plt.scatter(gt[video_name][1], 0, c="#1f33b4")
     plt.savefig(f"features/{video_name}/diff.png")
@@ -154,9 +154,9 @@ for video_name in video_names:
     new_features = cal_seg_features_v2(fuse, seg)
     x = np.arange(total)
     plt.plot(x, new_features)
-    for segs in gt[video_name]:
-        for x in segs:
-            plt.axvline(x=x, color="r", linestyle=":")
+    # for segs in gt[video_name]:
+    #     for x in segs:
+    #         plt.axvline(x=x, color="r", linestyle=":")
     # plt.scatter(gt[video_name][0], 0, c="#1f33b4")
     # plt.scatter(gt[video_name][1], 0, c="#1f33b4")
     plt.savefig(f"features/{video_name}/final_result.png")
